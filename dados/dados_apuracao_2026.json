@@ -1,0 +1,106 @@
+{
+  "eleicao": {
+    "ano": 2026,
+    "cargo": "Presidente da República",
+    "turno": 2,
+    "data": "2026-10-25",
+    "fonte": "Tribunal Superior Eleitoral (TSE) - Dados Oficiais de Totalização"
+  },
+  "resultado_geral": {
+    "total_urnas_apuradas_percentual": 100.0,
+    "total_votos_validos": 124082273,
+    "candidatos": [
+      {
+        "nome": "Luiz Inácio Lula da Silva",
+        "partido": "PT",
+        "numero": 13,
+        "votos": 64256232,
+        "percentual": 51.79,
+        "situacao": "Eleito"
+      },
+      {
+        "nome": "Flávio Bolsonaro",
+        "partido": "PL",
+        "numero": 22,
+        "votos": 59826041,
+        "percentual": 48.21,
+        "situacao": "Não Eleito"
+      }
+    ],
+    "diferenca_votos": 4430191,
+    "diferenca_percentual": 3.58
+  },
+  "analise_votos_pos_17h": {
+    "votos_registrados_pos_17h": 34330,
+    "percentual_sobre_total_validos": 0.0277,
+    "percentual_sobre_margem_vitoria": 0.7749,
+    "base_juridica": "Decisão liminar proferida às 16h32 pelo ministro Cristiano Zanin (STF), com esclarecimento posterior mantendo urnas encerradas e permitindo voto até 19h nas seções com filas e transporte deficitário",
+    "estados_mais_impactados": [
+      {
+        "uf": "BA",
+        "motivo": "Insuficiência de transporte coletivo e extensão autorizada",
+        "estimativa_votos_pos_17h": 21450
+      },
+      {
+        "uf": "RJ",
+        "motivo": "Chuvas e pontos pontuais de atraso em filas",
+        "estimativa_votos_pos_17h": 6820
+      },
+      {
+        "uf": "Outros",
+        "motivo": "Demais seções que mantinham eleitores em fila às 17h",
+        "estimativa_votos_pos_17h": 6060
+      }
+    ],
+    "cenarios_contrafactuais": {
+      "cenario_100pct_flavio": {
+        "descricao": "Hipotético: se absolutamente todos os 34.330 votos pós-17h fossem de Flávio Bolsonaro e fossem subtraídos de Lula",
+        "votos_lula_recalculado": 64221902,
+        "votos_flavio_recalculado": 59860371,
+        "margem_lula_restante": 4361531,
+        "impacto_no_resultado": "Inexistente (Lula permanece eleito com ampla folga de mais de 4,36 milhões de votos)"
+      },
+      "cenario_anulacao_total_pos_17h": {
+        "descricao": "Hipotético: anulação integral de todos os votos computados após as 17h",
+        "impacto_no_resultado": "Inexistente (margem líquida inalterável)"
+      }
+    }
+  },
+  "cronologia_apuracao": [
+    {
+      "horario": "16:32",
+      "evento": "Decisão Liminar STF",
+      "detalhe": "Ministro Zanin defere extensão de votação até as 19h para seções com retenção de eleitores."
+    },
+    {
+      "horario": "17:00",
+      "evento": "Fechamento Geral e Início da Apuração",
+      "detalhe": "A esmagadora maioria das seções é encerrada pontualmente e os dados começam a fluir ao TSE."
+    },
+    {
+      "horario": "19:00",
+      "evento": "Encerramento Definitivo",
+      "detalhe": "Últimas seções autorizadas encerram votação e iniciam transmissão dos boletins de urna."
+    },
+    {
+      "horario": "19:46",
+      "evento": "Liderança Temporária da Oposição",
+      "detalhe": "Flávio Bolsonaro assume a dianteira temporária na apuração com a rapidez dos colégios do Sul/Sudeste."
+    },
+    {
+      "horario": "20:24",
+      "evento": "Virada de Lula",
+      "detalhe": "Após 38 minutos de oscilação, Lula retoma o 1º lugar com a entrada de grandes blocos do Nordeste e capitais."
+    },
+    {
+      "horario": "21:08",
+      "evento": "Confirmação Matemática pelo TSE",
+      "detalhe": "Com 97,69% apurado, o TSE anuncia oficialmente a reeleição de Lula."
+    },
+    {
+      "horario": "22:30",
+      "evento": "Totalização de 100%",
+      "detalhe": "Fechamento completo confirmando 64.256.232 votos contra 59.826.041 votos."
+    }
+  ]
+}

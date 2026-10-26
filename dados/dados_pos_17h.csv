@@ -1,0 +1,9 @@
+metrica,valor,percentual_base,observacao
+total_votos_validos,124082273,100.00%,Total apurado no 2º Turno 2026
+votos_lula_oficial,64256232,51.79%,Eleito para o 4º mandato
+votos_flavio_oficial,59826041,48.21%,Segundo colocado
+margem_vitoria,4430191,3.58%,Diferença a favor de Lula
+votos_pos_17h,34330,0.0277%,Votos registrados entre 17h e 19h
+impacto_sobre_margem,34330,0.7749%,Percentual que os votos pós-17h representam sobre a vantagem
+margem_remanescente_pior_caso,4361531,3.52%,Margem caso 100% dos votos pós-17h fossem de Flávio
+resultado_alteravel,NAO,0.00%,Veredito estatístico e matemático incontestável

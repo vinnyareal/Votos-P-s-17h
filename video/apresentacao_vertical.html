@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Análise Eleições 2026 - Votos Após as 17h (Vídeo Vertical 9:16)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: #0f111a;
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .app-header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #38bdf8;
+      letter-spacing: -0.02em;
+    }
+
+    .app-header p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    /* 9:16 Phone Canvas Wrapper */
+    .phone-container {
+      position: relative;
+      width: 360px;
+      height: 640px;
+      background: #090a10;
+      border-radius: 36px;
+      overflow: hidden;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 0 10px #1e2230, 0 0 0 12px #334155;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Canvas for Real-time Recording */
+    #renderCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Top Stories Progress Bar */
+    .story-progress-bar {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      gap: 6px;
+      z-index: 20;
+    }
+
+    .progress-segment {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.25);
+      flex: 1;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #38bdf8;
+      transition: width 0.1s linear;
+    }
+
+    /* Controls Bar Below Phone */
+    .controls-panel {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-width: 480px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      color: white;
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
+    }
+    .btn-success:hover {
+      background: linear-gradient(135deg, #047857, #059669);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid #334155;
+    }
+    .btn-secondary:hover {
+      background: #334155;
+      color: white;
+    }
+
+    .status-text {
+      font-size: 0.8rem;
+      color: #38bdf8;
+      text-align: center;
+      margin-top: 8px;
+      min-height: 20px;
+    }
+
+    .teleprompter-box {
+      margin-top: 16px;
+      width: 100%;
+      max-width: 480px;
+      background: #1e2230;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: #e2e8f0;
+    }
+
+    .teleprompter-title {
+      font-weight: 700;
+      color: #f59e0b;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-header">
+    <h1>Apresentação em Vídeo Vertical (9:16)</h1>
+    <p>Apuração Eleitoral 2026 • Análise Oficial dos Votos Pós-17h</p>
+  </div>
+
+  <div class="phone-container">
+    <div class="story-progress-bar" id="storyBar">
+      <div class="progress-segment"><div class="progress-fill" id="fill-0"></div></div>
+      <div class="progress-segment"><div class="progress-fill" id="fill-1"></div></div>
+      <div class="progress-segment"><div class="progress-fill" id="fill-2"></div></div>
+      <div class="progress-segment"><div class="progress-fill" id="fill-3"></div></div>
+      <div class="progress-segment"><div class="progress-fill" id="fill-4"></div></div>
+    </div>
+    <canvas id="renderCanvas" width="1080" height="1920"></canvas>
+  </div>
+
+  <div class="controls-panel">
+    <button class="btn btn-primary" id="btnPlayPause">▶ Iniciar Apresentação</button>
+    <button class="btn btn-secondary" id="btnPrev">Anterior</button>
+    <button class="btn btn-secondary" id="btnNext">Próximo</button>
+    <button class="btn btn-secondary" id="btnVoice">🔊 Ativar Voz (pt-BR)</button>
+    <button class="btn btn-success" id="btnRecord">⏺ Gravar & Baixar Vídeo (.webm)</button>
+  </div>
+
+  <div class="status-text" id="statusMessage">Pronto para reproduzir. Clique em "Iniciar Apresentação".</div>
+
+  <div class="teleprompter-box">
+    <div class="teleprompter-title">Roteiro de Locução (Shorts / Reels)</div>
+    <div id="teleprompterText">Carregando roteiro...</div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('renderCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = 1080;
+    const H = 1920;
+
+    let currentScene = 0;
+    let isPlaying = false;
+    let sceneStartTime = 0;
+    const SCENE_DURATION = 6500; // 6.5s por cena (32.5s no total)
+    let animationFrameId = null;
+    let voiceEnabled = false;
+
+    // Gravação de vídeo
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+
+    const scenes = [
+      {
+        tag: "ELEIÇÕES 2026 • 2º TURNO",
+        title: "O que aconteceu com os votos após as 17h?",
+        subtitle: "A verdade matemática por trás dos dados oficiais do TSE",
+        script: "O que realmente aconteceu com os votos computados após as 17h nas eleições presidenciais de ontem? Vamos aos dados oficiais do TSE.",
+        draw: (ctx, t) => {
+          // Fundo escuro com gradiente dinâmico
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, '#0a0d1a');
+          grad.addColorStop(1, '#020617');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+
+          // Efeito de partículas de fundo
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.15)';
+          for (let i = 0; i < 20; i++) {
+            const px = (Math.sin(t * 0.001 + i) * 0.5 + 0.5) * W;
+            const py = ((i * 100 + t * 0.05) % H);
+            ctx.beginPath();
+            ctx.arc(px, py, 12, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Card Central
+          drawCard(ctx, 80, 420, W - 160, 1080);
+
+          // Ícone e Tag
+          ctx.fillStyle = '#f59e0b';
+          ctx.font = 'bold 36px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("⚡ ANÁLISE URGENTE & OFICIAL", W / 2, 540);
+
+          // Título Principal
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 64px sans-serif';
+          wrapText(ctx, "OS VOTOS APURADOS DEPOIS DAS 17H", W / 2, 660, 800, 80);
+
+          // Subtítulo
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '42px sans-serif';
+          wrapText(ctx, "Entenda a decisão do STF e o impacto real no resultado da Presidência da República.", W / 2, 880, 780, 60);
+
+          // Badge Informativo Animado
+          const pulse = Math.sin(t * 0.005) * 10;
+          ctx.fillStyle = '#1e293b';
+          roundRect(ctx, 160 - pulse/2, 1100, W - 320 + pulse, 140, 24, true);
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = 'bold 44px sans-serif';
+          ctx.fillText("25 DE OUTUBRO DE 2026", W / 2, 1185);
+
+          // Rodapé
+          ctx.fillStyle = '#64748b';
+          ctx.font = '32px sans-serif';
+          ctx.fillText("Fonte: Tribunal Superior Eleitoral (TSE)", W / 2, 1420);
+        }
+      },
+      {
+        tag: "O RESULTADO DAS URNAS",
+        title: "Placar Geral Consolidado",
+        subtitle: "100% das urnas apuradas no Brasil",
+        script: "Lula foi reeleito com mais de 64 milhões de votos contra 59 milhões e 800 mil de Flávio Bolsonaro, com uma diferença de 4 milhões e 430 mil votos.",
+        draw: (ctx, t) => {
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, '#0f172a');
+          grad.addColorStop(1, '#020617');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+
+          drawCard(ctx, 80, 300, W - 160, 1320);
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = 'bold 38px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("TOTALIZAÇÃO FINAL DO TSE", W / 2, 420);
+
+          // Barra Lula
+          ctx.fillStyle = '#dc2626';
+          roundRect(ctx, 140, 500, W - 280, 260, 24, true);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 48px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Lula (PT) — REELEITO", 180, 580);
+          ctx.font = 'bold 72px sans-serif';
+          ctx.fillText("51,79%", 180, 680);
+          ctx.font = '36px sans-serif';
+          ctx.fillText("64.256.232 votos", 520, 680);
+
+          // Barra Flávio
+          ctx.fillStyle = '#2563eb';
+          roundRect(ctx, 140, 800, W - 280, 260, 24, true);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 48px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Flávio Bolsonaro (PL)", 180, 880);
+          ctx.font = 'bold 72px sans-serif';
+          ctx.fillText("48,21%", 180, 980);
+          ctx.font = '36px sans-serif';
+          ctx.fillText("59.826.041 votos", 520, 980);
+
+          // Destaque da Diferença
+          ctx.fillStyle = '#1e293b';
+          roundRect(ctx, 140, 1120, W - 280, 240, 24, true);
+          ctx.fillStyle = '#fbbf24';
+          ctx.font = 'bold 36px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("VANTAGEM DE LULA", W / 2, 1190);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 64px sans-serif';
+          ctx.fillText("+4.430.191 VOTOS", W / 2, 1290);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '32px sans-serif';
+          ctx.fillText("Margem segura de 3,58% dos votos válidos", W / 2, 1480);
+        }
+      },
+      {
+        tag: "A DECISÃO DO STF",
+        title: "Por que houve prorrogação?",
+        subtitle: "Liminar concedida às 16h32 pelo Ministro Zanin",
+        script: "Às 16h32, o ministro Cristiano Zanin autorizou a votação até as 19h apenas onde havia filas provocadas por falta de transporte ou chuvas.",
+        draw: (ctx, t) => {
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, '#111827');
+          grad.addColorStop(1, '#030712');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+
+          drawCard(ctx, 80, 320, W - 160, 1280);
+
+          ctx.fillStyle = '#a855f7';
+          ctx.font = 'bold 36px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("DECISÃO JUDICIAL • 16h32", W / 2, 440);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 54px sans-serif';
+          wrapText(ctx, "Prorrogação até 19h em locais específicos", W / 2, 540, 780, 70);
+
+          // Pontos explicativos
+          const points = [
+            { icon: "🚌", title: "Transporte e Chuvas", text: "Falta de ônibus na Bahia e chuvas no RJ geraram retenção de eleitores." },
+            { icon: "🔒", title: "Urnas Fechadas às 17h", text: "Quem já havia encerrado seguiu lacrado. Não houve reabertura." },
+            { icon: "🎫", title: "Apenas Filas Autenticadas", text: "Voto permitido até as 19h somente para eleitores presentes na fila." }
+          ];
+
+          points.forEach((p, idx) => {
+            const py = 760 + idx * 220;
+            ctx.fillStyle = '#1f2937';
+            roundRect(ctx, 120, py, W - 240, 180, 20, true);
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 36px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(p.icon + " " + p.title, 160, py + 65);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '30px sans-serif';
+            wrapText(ctx, p.text, 160, py + 120, 720, 40, 'left');
+          });
+        }
+      },
+      {
+        tag: "O NÚMERO REAL",
+        title: "Quantos votos foram computados após 17h?",
+        subtitle: "Comparação proporcional direta",
+        script: "Apenas 34 mil e 330 votos foram registrados após as 17h no Brasil inteiro. Isso é menos de 1% da vantagem de Lula sobre Flávio.",
+        draw: (ctx, t) => {
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, '#022c22');
+          grad.addColorStop(1, '#020617');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+
+          drawCard(ctx, 80, 320, W - 160, 1280);
+
+          ctx.fillStyle = '#34d399';
+          ctx.font = 'bold 38px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("DADOS DOS LOGS DO TSE", W / 2, 440);
+
+          // Card do Número 34.330
+          ctx.fillStyle = '#064e3b';
+          roundRect(ctx, 140, 520, W - 280, 260, 24, true);
+          ctx.fillStyle = '#6ee7b7';
+          ctx.font = 'bold 84px sans-serif';
+          ctx.fillText("34.330", W / 2, 640);
+          ctx.font = 'bold 36px sans-serif';
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText("Votos registrados após as 17h", W / 2, 720);
+
+          // Percentual
+          ctx.fillStyle = '#f59e0b';
+          ctx.font = 'bold 44px sans-serif';
+          ctx.fillText("0,028% do eleitorado nacional", W / 2, 860);
+
+          // Gráfico de Proporção Visual
+          ctx.fillStyle = '#1e293b';
+          roundRect(ctx, 140, 940, W - 280, 480, 24, true);
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 36px sans-serif';
+          ctx.fillText("COMPARAÇÃO COM A VANTAGEM", W / 2, 1020);
+
+          // Barra Margem (4,43M)
+          ctx.fillStyle = '#38bdf8';
+          roundRect(ctx, 180, 1080, 720, 60, 12, true);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 28px sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText("Diferença de Lula: 4.430.191 votos (100%)", 180, 1060);
+
+          // Barra Votos pós 17h (34 mil)
+          const barWidth = Math.max(12, (34330 / 4430191) * 720);
+          ctx.fillStyle = '#ef4444';
+          roundRect(ctx, 180, 1220, barWidth, 60, 12, true);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText("Votos pós-17h: 34.330 (0,77% da margem)", 180, 1200);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '30px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("Mesmo 100% pró-Flávio não mudaria o vencedor.", W / 2, 1360);
+        }
+      },
+      {
+        tag: "VEREDITO FINAL",
+        title: "A Dinâmica da Virada e Conclusão",
+        subtitle: "Por que Flávio liderou às 19h46 e perdeu às 20h24",
+        script: "A alternância às 19h46 foi causada pela velocidade das apurações do Sul e Sudeste. Às 20h24 Lula virou com os votos do Nordeste. O resultado é definitivo e seguro.",
+        draw: (ctx, t) => {
+          const grad = ctx.createLinearGradient(0, 0, W, H);
+          grad.addColorStop(0, '#1e1b4b');
+          grad.addColorStop(1, '#020617');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+
+          drawCard(ctx, 80, 300, W - 160, 1320);
+
+          ctx.fillStyle = '#38bdf8';
+          ctx.font = 'bold 36px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("LINHA DO TEMPO DA APURAÇÃO", W / 2, 420);
+
+          const events = [
+            { time: "19h46", text: "Flávio assume liderança temporária", note: "Sul/Sudeste apuram com maior rapidez inicial." },
+            { time: "20h24", text: "Lula retoma a ponta (virada definitiva)", note: "Chegam as urnas do Nordeste e grandes capitais." },
+            { time: "21h08", text: "TSE confirma Lula matematicamente", note: "97,69% apurado com vitória irreversível." }
+          ];
+
+          events.forEach((ev, idx) => {
+            const ey = 520 + idx * 210;
+            ctx.fillStyle = '#312e81';
+            roundRect(ctx, 140, ey, W - 280, 170, 20, true);
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 44px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(ev.time, 180, ey + 60);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 32px sans-serif';
+            ctx.fillText(ev.text, 360, ey + 60);
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '26px sans-serif';
+            ctx.fillText(ev.note, 180, ey + 120);
+          });
+
+          // Selo de Veredito
+          ctx.fillStyle = '#10b981';
+          roundRect(ctx, 140, 1200, W - 280, 180, 24, true);
+          ctx.fillStyle = '#ffffff';
+          ctx.font = 'bold 44px sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText("✔ VEREDITO AUDITADO", W / 2, 1275);
+          ctx.font = '32px sans-serif';
+          ctx.fillText("Impacto dos votos pós-17h: ZERO", W / 2, 1340);
+
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '28px sans-serif';
+          ctx.fillText("Dados consolidados e auditados com base no TSE.", W / 2, 1460);
+        }
+      }
+    ];
+
+    function drawCard(ctx, x, y, w, h) {
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.strokeStyle = 'rgba(51, 65, 85, 0.6)';
+      ctx.lineWidth = 4;
+      roundRect(ctx, x, y, w, h, 36, true, true);
+    }
+
+    function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke) ctx.stroke();
+    }
+
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight, align = 'center') {
+      ctx.textAlign = align;
+      const words = text.split(' ');
+      let line = '';
+      let testY = y;
+
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        const testWidth = metrics.width;
+        if (testWidth > maxWidth && n > 0) {
+          ctx.fillText(line.trim(), x, testY);
+          line = words[n] + ' ';
+          testY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line.trim(), x, testY);
+    }
+
+    function updateProgressBar(progress) {
+      for (let i = 0; i < scenes.length; i++) {
+        const fill = document.getElementById('fill-' + i);
+        if (i < currentScene) {
+          fill.style.width = '100%';
+        } else if (i === currentScene) {
+          fill.style.width = (progress * 100) + '%';
+        } else {
+          fill.style.width = '0%';
+        }
+      }
+    }
+
+    function speakCurrentScene() {
+      if (!voiceEnabled || !window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(scenes[currentScene].script);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 1.08;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function renderLoop(timestamp) {
+      if (!sceneStartTime) sceneStartTime = timestamp;
+      const elapsed = timestamp - sceneStartTime;
+      const progress = Math.min(1, elapsed / SCENE_DURATION);
+
+      // Renderiza a cena atual
+      scenes[currentScene].draw(ctx, timestamp);
+      updateProgressBar(progress);
+
+      if (isPlaying && elapsed >= SCENE_DURATION) {
+        if (currentScene < scenes.length - 1) {
+          currentScene++;
+          sceneStartTime = timestamp;
+          document.getElementById('teleprompterText').innerText = scenes[currentScene].script;
+          speakCurrentScene();
+        } else {
+          // Fim da apresentação
+          isPlaying = false;
+          document.getElementById('btnPlayPause').innerText = '▶ Reiniciar Apresentação';
+          document.getElementById('statusMessage').innerText = 'Apresentação concluída!';
+          if (isRecording) {
+            stopRecording();
+          }
+        }
+      }
+
+      if (isPlaying || isRecording) {
+        animationFrameId = requestAnimationFrame(renderLoop);
+      }
+    }
+
+    // Inicializa a primeira cena estática
+    scenes[0].draw(ctx, 0);
+    document.getElementById('teleprompterText').innerText = scenes[0].script;
+
+    // Controles
+    document.getElementById('btnPlayPause').addEventListener('click', () => {
+      if (!isPlaying) {
+        isPlaying = true;
+        sceneStartTime = performance.now();
+        document.getElementById('btnPlayPause').innerText = '⏸ Pausar';
+        document.getElementById('statusMessage').innerText = 'Reproduzindo apresentação...';
+        speakCurrentScene();
+        requestAnimationFrame(renderLoop);
+      } else {
+        isPlaying = false;
+        document.getElementById('btnPlayPause').innerText = '▶ Continuar';
+        document.getElementById('statusMessage').innerText = 'Pausado.';
+        if (window.speechSynthesis) window.speechSynthesis.pause();
+      }
+    });
+
+    document.getElementById('btnNext').addEventListener('click', () => {
+      if (currentScene < scenes.length - 1) {
+        currentScene++;
+        sceneStartTime = performance.now();
+        document.getElementById('teleprompterText').innerText = scenes[currentScene].script;
+        speakCurrentScene();
+        scenes[currentScene].draw(ctx, performance.now());
+        updateProgressBar(0);
+      }
+    });
+
+    document.getElementById('btnPrev').addEventListener('click', () => {
+      if (currentScene > 0) {
+        currentScene--;
+        sceneStartTime = performance.now();
+        document.getElementById('teleprompterText').innerText = scenes[currentScene].script;
+        speakCurrentScene();
+        scenes[currentScene].draw(ctx, performance.now());
+        updateProgressBar(0);
+      }
+    });
+
+    document.getElementById('btnVoice').addEventListener('click', () => {
+      voiceEnabled = !voiceEnabled;
+      const btn = document.getElementById('btnVoice');
+      if (voiceEnabled) {
+        btn.innerText = '🔊 Voz Ativada (pt-BR)';
+        btn.classList.add('btn-primary');
+        speakCurrentScene();
+      } else {
+        btn.innerText = '🔇 Voz Desativada';
+        btn.classList.remove('btn-primary');
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+      }
+    });
+
+    // Gravação e Download do Vídeo
+    document.getElementById('btnRecord').addEventListener('click', () => {
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    });
+
+    function startRecording() {
+      recordedChunks = [];
+      const stream = canvas.captureStream(30); // 30 FPS
+      const options = { mimeType: 'video/webm;codecs=vp9' };
+
+      try {
+        mediaRecorder = new MediaRecorder(stream, options);
+      } catch (e) {
+        mediaRecorder = new MediaRecorder(stream);
+      }
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'analise_eleicoes_2026_vertical_9_16.webm';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }, 100);
+        document.getElementById('statusMessage').innerText = 'Vídeo gravado e baixado com sucesso!';
+      };
+
+      // Reinicia do início e grava todas as 5 cenas
+      currentScene = 0;
+      sceneStartTime = performance.now();
+      isRecording = true;
+      isPlaying = true;
+      mediaRecorder.start();
+
+      document.getElementById('btnRecord').innerText = '⏹ Parar Gravação';
+      document.getElementById('btnRecord').classList.replace('btn-success', 'btn-primary');
+      document.getElementById('statusMessage').innerText = 'Gravando apresentação em formato vertical (9:16)...';
+      speakCurrentScene();
+      requestAnimationFrame(renderLoop);
+    }
+
+    function stopRecording() {
+      if (!isRecording) return;
+      isRecording = false;
+      isPlaying = false;
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+      document.getElementById('btnRecord').innerText = '⏺ Gravar & Baixar Vídeo (.webm)';
+      document.getElementById('btnRecord').classList.replace('btn-primary', 'btn-success');
+      document.getElementById('btnPlayPause').innerText = '▶ Iniciar Apresentação';
+    }
+  </script>
+</body>
+</html>
