@@ -26,26 +26,29 @@ Repositório contendo a auditoria técnica, análise de dados estatísticos e ap
 
 ```text
 ├── dados/
-│   ├── dados_apuracao_2026.json      # Dataset estruturado em JSON com a apuração e cronologia
-│   └── dados_pos_17h.csv             # Tabela CSV com métricas e comparação proporcional
+│   ├── dados_apuracao_2026.json          # Dataset estruturado em JSON com a apuração e cronologia
+│   └── dados_pos_17h.csv                 # Tabela CSV com métricas e comparação proporcional
 ├── video/
-│   └── apresentacao_vertical.html     # Player interativo 9:16 com animação em Canvas, voz pt-BR e gravador WebM/MP4
-├── ANALISE_DETALHADA_VOTOS_POS_17H.md # Relatório técnico aprofundado com jurisprudência do STF e dados de urnas
-├── setup_git.ps1                      # Script utilitário em PowerShell para publicação no GitHub
-└── README.md                          # Este documento
+│   ├── analise_eleicoes_2026_vertical.mp4 # VÍDEO FINAL EXPORTADO (1080x1920, 9:16 com áudio pt-BR)
+│   ├── apresentacao_vertical.html        # Player interativo web 9:16 com animação em Canvas e voz
+│   ├── render_video.py                   # Script Python/FFmpeg de renderização do vídeo MP4
+│   └── gerar_audio.ps1                   # Script de síntese de voz (Microsoft Maria Desktop pt-BR)
+├── ANALISE_DETALHADA_VOTOS_POS_17H.md     # Relatório técnico aprofundado com jurisprudência do STF
+├── setup_git.ps1                          # Script utilitário em PowerShell para publicação no GitHub
+└── README.md                              # Este documento
 ```
 
 ---
 
-## 📱 3. Apresentação em Vídeo Vertical (9:16)
+## 📱 3. O Vídeo Vertical Pronto (MP4 - 9:16)
 
-Desenvolvemos um visualizador nativo no formato **9:16** (estilo Shorts, Instagram Reels e TikTok) diretamente em HTML5 Canvas:
-- **Animações em tempo real**: Contadores de votos dinâmicos, barras de comparação de proporção e linha do tempo dos acontecimentos da noite.
-- **Roteiro e Locução**: Roteiro com sincronização de texto e síntese de voz integrada em português (`pt-BR`).
-- **Exportação com 1 clique**: Botão integrado que utiliza a API `MediaRecorder` para gravar e baixar o vídeo `.webm` pronto para publicação em redes sociais.
+O arquivo de vídeo renderizado já está gerado e disponível diretamente na pasta do repositório:
+👉 **[`video/analise_eleicoes_2026_vertical.mp4`](video/analise_eleicoes_2026_vertical.mp4)**
 
-Para assistir e exportar o vídeo:
-Basta abrir o arquivo [`video/apresentacao_vertical.html`](video/apresentacao_vertical.html) em qualquer navegador moderno.
+- **Resolução**: 1080x1920 (proporção 9:16 nativa para Reels, Shorts e TikTok).
+- **Duração**: ~70 segundos cobrindo as 5 cenas chave da eleição.
+- **Áudio**: Locução em português brasileiro (`pt-BR`) sincronizada com legendas e cartões dinâmicos.
+- **Gráficos**: Comparação visual proporcional dos 34.330 votos contra a vantagem de 4,43 milhões e a cronologia da virada.
 
 ---
 
